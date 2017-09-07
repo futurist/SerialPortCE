@@ -24,9 +24,11 @@ namespace meter
         string transType = string.Empty;
         int curDir = -1;
         int totalBytes = 0;
-        string fileName;
+        string logFileName;
         StreamWriter stream;
         Form2 blackForm=null;
+        bool DEBUG = false;
+        string CLOSE_KEY = null;
 
         public Form1()
         {
@@ -34,15 +36,21 @@ namespace meter
 
             
 
-            fileName = DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt";
-            stream = new StreamWriter(fileName, true);
-
+            logFileName = Path.Combine(baseFolder, DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt");
             string iniFilePath = Path.Combine(baseFolder, @"meter_config.ini");
 
             //FileStream f= File.OpenRead(iniFilePath);
             //Console.WriteLine("baseFolder", f.ReadByte());
 
             ini = new INIFile(iniFilePath);
+
+            DEBUG = ini.ReadValueAsString("App", "Debug", "FALSE").Equals("TRUE", StringComparison.OrdinalIgnoreCase);
+            CLOSE_KEY = ini.ReadValueAsString("App", "Close", "A2 A2");
+
+            if (DEBUG)
+            {
+                stream = new StreamWriter(logFileName, true);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -52,7 +60,8 @@ namespace meter
             comm.Parity = ini.ReadValueAsString("Port1", "Parity", "None");
             comm.StopBits = ini.ReadValueAsString("Port1", "StopBits", "One");
             comm.DataBits = ini.ReadValueAsString("Port1", "DataBits", "8");
-            comm.DisplayWindow = rtbDisplay;
+
+            if (DEBUG) comm.DisplayWindow = rtbDisplay;
             comm.OpenPort();
 
             comm2.PortName = ini.ReadValueAsString("Port2", "PortName", "COM2");
@@ -82,25 +91,42 @@ namespace meter
 
         int forward1(String abc)
         {
-            if (curDir != 0)
+            if (abc.Trim() == CLOSE_KEY)
             {
-                stream.Write(Environment.NewLine+Environment.NewLine+"<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")+Environment.NewLine);
+                blackForm.Close();
+                return 0;
             }
+
+            if (DEBUG)
+            {
+                if (curDir != 0)
+                {
+                    stream.Write(Environment.NewLine + Environment.NewLine + "<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ") + Environment.NewLine);
+                }
+                stream.Write(abc);
+            }
+
             curDir = 0;
-            stream.Write(abc);
+            
             comm2.WriteData(abc);
             totalBytes += abc.Length;
+
             return 1;
         }
 
         int forward2(String abc)
         {
-            if (curDir != 1)
+            if (DEBUG)
             {
-                stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ" + Environment.NewLine));
+                if (curDir != 1)
+                {
+                    stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ" + Environment.NewLine));
+                }
+                stream.Write(abc);
             }
+
             curDir = 1;
-            stream.Write(abc);
+
             comm.WriteData(abc);
             totalBytes += abc.Length;
             return 1;
@@ -117,7 +143,7 @@ namespace meter
 
                 if (totalBytes == 0)
                 {
-                    File.Delete(fileName);
+                    File.Delete(logFileName);
                 }
             }
 

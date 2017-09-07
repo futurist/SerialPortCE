@@ -30,6 +30,11 @@ namespace meter
         {
             this.Close();
         }
+
+        private void Form2_Closing(object sender, CancelEventArgs e)
+        {
+            FullScreen.StopFullScreen(this); 
+        }
     }
 }
 

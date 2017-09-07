@@ -50,6 +50,7 @@
             this.Name = "Form2";
             this.Text = "Form2";
             this.Load += new System.EventHandler(this.Form2_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.Form2_Closing);
             this.ResumeLayout(false);
 
         }

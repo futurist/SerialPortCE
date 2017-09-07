@@ -31,7 +31,7 @@ namespace meter
         public string name = string.Empty;
 
         private TransmissionType _transType;
-        private TextBox _displayWindow;
+        private TextBox _displayWindow = null;
         public Func<string, int> onData = null;
         //global manager variables
         private Color[] MessageColor = { Color.Blue, Color.Green, Color.Black, Color.Orange, Color.Red };
