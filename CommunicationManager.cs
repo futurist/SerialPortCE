@@ -171,7 +171,7 @@ namespace meter
         {
             if (!(comPort.IsOpen == true))
             {
-                DisplayData(MessageType.Error, "Open Port before sending data!\n");
+                DisplayData(MessageType.Error, "Open Port before sending data!" + Environment.NewLine);
             }
             switch (CurrentTransmissionType)
             {
@@ -180,7 +180,7 @@ namespace meter
                     comPort.Write(msg);
                     SendEndOfLine();
                     //display the message
-                    DisplayData(MessageType.Outgoing, "--Write--\n" + msg + "\n");
+                    DisplayData(MessageType.Outgoing, "--Write--" + Environment.NewLine + msg + Environment.NewLine);
                     break;
                 case TransmissionType.Hex:
                     try
@@ -191,12 +191,12 @@ namespace meter
                         comPort.Write(newMsg, 0, newMsg.Length);
                         SendEndOfLine();
                         //convert back to hex and display
-                        DisplayData(MessageType.Outgoing, "--Write--\n" + ByteToHex(newMsg) + "\n");
+                        DisplayData(MessageType.Outgoing, "--Write--" + Environment.NewLine + ByteToHex(newMsg) + Environment.NewLine);
                     }
                     catch (FormatException ex)
                     {
                         //display error message
-                        DisplayData(MessageType.Error, ex.Message + "\n");
+                        DisplayData(MessageType.Error, ex.Message + Environment.NewLine);
                     }
                     finally
                     {
@@ -208,7 +208,7 @@ namespace meter
                     comPort.Write(msg);
                     SendEndOfLine();
                     //display the message
-                    DisplayData(MessageType.Outgoing, "--Write--\n" + msg + "\n");
+                    DisplayData(MessageType.Outgoing, "--Write--" + Environment.NewLine + msg + Environment.NewLine);
                     break;
             }
         }
@@ -306,13 +306,13 @@ namespace meter
                 //now open the port
                 comPort.Open();
                 //display message
-                DisplayData(MessageType.Normal, "Port opened at " + DateTime.Now + "\n");
+                DisplayData(MessageType.Normal, String.Format(@"Port {0} opened at {1}" + Environment.NewLine, _portName, _baudRate));
                 //return true
                 return true;
             }
             catch (Exception ex)
             {
-                DisplayData(MessageType.Error, ex.Message + "\n");
+                DisplayData(MessageType.Error, ex.Message + Environment.NewLine);
                 return false;
             }
         }
@@ -380,7 +380,7 @@ namespace meter
                     if (msg.Length > 0)
                     {
                         if (onData != null) onData(msg);
-                        DisplayData(MessageType.Incoming, "--Read--\n" + msg + "\n");
+                        DisplayData(MessageType.Incoming, "--Read--" + Environment.NewLine + msg + Environment.NewLine);
                     }
                     break;
                 //user chose binary
@@ -395,7 +395,7 @@ namespace meter
                     if (bytes > 0)
                     {
                         if (onData != null) onData(ByteToHex(comBuffer));
-                        DisplayData(MessageType.Incoming, "--Read--\n" + ByteToHex(comBuffer) + "\n");
+                        DisplayData(MessageType.Incoming, "--Read--" + Environment.NewLine + ByteToHex(comBuffer) + Environment.NewLine);
                     }
                     break;
                 default:
@@ -403,7 +403,7 @@ namespace meter
                     msg = comPort.ReadExisting().Trim();
                     //display the data to the user
                     if (msg.Length > 0)
-                        DisplayData(MessageType.Incoming, "--Read--\n" + msg + "\n");
+                        DisplayData(MessageType.Incoming, "--Read--" + Environment.NewLine + msg + Environment.NewLine);
                     break;
             }
 

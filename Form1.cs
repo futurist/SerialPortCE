@@ -17,33 +17,48 @@ namespace meter
 
         CommunicationManager comm2 = new CommunicationManager();
 
+        INIFile ini;
+
+        string baseFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         string transType = string.Empty;
         int curDir = -1;
         int totalBytes = 0;
-        static string fileName = DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt";
-        StreamWriter stream = new StreamWriter(Form1.fileName, true);
+        string fileName;
+        StreamWriter stream;
 
 
         public Form1()
         {
             InitializeComponent();
+
+            
+
+            fileName = DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt";
+            stream = new StreamWriter(fileName, true);
+
+            string iniFilePath = Path.Combine(baseFolder, @"meter_config.ini");
+
+            //FileStream f= File.OpenRead(iniFilePath);
+            //Console.WriteLine("baseFolder", f.ReadByte());
+
+            ini = new INIFile(iniFilePath);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            comm.PortName = "COM5";
-            comm.Parity = "None";
-            comm.StopBits = "One";
-            comm.DataBits = "8";
-            comm.BaudRate = "9600";
+            comm.PortName = ini.ReadValueAsString("Port1", "PortName", "COM5");
+            comm.BaudRate = ini.ReadValueAsString("Port1", "BaudRate", "9600"); 
+            comm.Parity = ini.ReadValueAsString("Port1", "Parity", "None");
+            comm.StopBits = ini.ReadValueAsString("Port1", "StopBits", "One");
+            comm.DataBits = ini.ReadValueAsString("Port1", "DataBits", "8");
             comm.DisplayWindow = rtbDisplay;
             comm.OpenPort();
 
-            comm2.PortName = "COM2";
-            comm2.Parity = "None";
-            comm2.StopBits = "One";
-            comm2.DataBits = "8";
-            comm2.BaudRate = "9600";
+            comm2.PortName = ini.ReadValueAsString("Port2", "PortName", "COM2");
+            comm2.BaudRate = ini.ReadValueAsString("Port2", "BaudRate", "9600");
+            comm2.Parity = ini.ReadValueAsString("Port2", "Parity", "None");
+            comm2.StopBits = ini.ReadValueAsString("Port2", "StopBits", "One");
+            comm2.DataBits = ini.ReadValueAsString("Port2", "DataBits", "8");
             // comm2.DisplayWindow = rtbDisplay;
             comm2.OpenPort();
 
@@ -64,7 +79,7 @@ namespace meter
         {
             if (curDir != 0)
             {
-                stream.Write("\r\n\r\n<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ\r\n"));
+                stream.Write(Environment.NewLine+Environment.NewLine+"<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")+Environment.NewLine);
             }
             curDir = 0;
             stream.Write(abc);
@@ -77,7 +92,7 @@ namespace meter
         {
             if (curDir != 1)
             {
-                stream.Write("\r\n\r\n-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ\r\n"));
+                stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ" + Environment.NewLine));
             }
             curDir = 1;
             stream.Write(abc);
@@ -97,7 +112,7 @@ namespace meter
 
                 if (totalBytes == 0)
                 {
-                    File.Delete(Form1.fileName);
+                    File.Delete(fileName);
                 }
             }
 
