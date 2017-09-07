@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace meter
 {
@@ -25,7 +26,7 @@ namespace meter
         int totalBytes = 0;
         string fileName;
         StreamWriter stream;
-
+        Form2 blackForm=null;
 
         public Form1()
         {
@@ -62,8 +63,12 @@ namespace meter
             // comm2.DisplayWindow = rtbDisplay;
             comm2.OpenPort();
 
+            
+            blackForm = new Form2();
+            blackForm.Show();
 
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
