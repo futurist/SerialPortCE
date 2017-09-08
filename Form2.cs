@@ -18,11 +18,14 @@ namespace meter
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            this.Width = Screen.PrimaryScreen.Bounds.Width;
-            this.Height = Screen.PrimaryScreen.Bounds.Height;
-            this.Left = 0;
-            this.Top = 0;
+            //this.Width = Screen.PrimaryScreen.Bounds.Width;
+            //this.Height = Screen.PrimaryScreen.Bounds.Height;
+            //this.Left = 0;
+            //this.Top = 0;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.ControlBox = false;
 
+            Cursor.Hide();
             FullScreen.StartFullScreen(this); 
         }
 
@@ -33,6 +36,7 @@ namespace meter
 
         private void Form2_Closing(object sender, CancelEventArgs e)
         {
+            Cursor.Show();
             FullScreen.StopFullScreen(this); 
         }
     }

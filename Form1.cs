@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace meter
 {
@@ -29,6 +30,9 @@ namespace meter
         Form2 blackForm=null;
         bool DEBUG = false;
         string CLOSE_KEY = null;
+        string CLOSE_RUN1 = null;
+        string CLOSE_RUN2 = null;
+        string CLOSE_RUN3 = null;
 
         public Form1()
         {
@@ -45,7 +49,10 @@ namespace meter
             ini = new INIFile(iniFilePath);
 
             DEBUG = ini.ReadValueAsString("App", "Debug", "FALSE").Equals("TRUE", StringComparison.OrdinalIgnoreCase);
-            CLOSE_KEY = ini.ReadValueAsString("App", "Close", "A2 A2");
+            CLOSE_KEY = ini.ReadValueAsString("App", "CloseKey", "90 90");
+            CLOSE_RUN1 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun1", ""));
+            CLOSE_RUN2 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun2", ""));
+            CLOSE_RUN3 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun3", ""));
 
             if (DEBUG)
             {
@@ -72,9 +79,11 @@ namespace meter
             // comm2.DisplayWindow = rtbDisplay;
             comm2.OpenPort();
 
-            
-            blackForm = new Form2();
-            blackForm.Show();
+            if (! DEBUG)
+            {
+                blackForm = new Form2();
+                blackForm.Show();
+            }
 
         }
 
@@ -93,7 +102,16 @@ namespace meter
         {
             if (abc.Trim() == CLOSE_KEY)
             {
-                blackForm.Close();
+                //Throw: control.Invoke must be used to interact with controls created on a separate thread
+                //blackForm.Close();
+
+                cleanUp();
+
+                runApp(CLOSE_RUN1, "");
+                runApp(CLOSE_RUN2, "");
+                runApp(CLOSE_RUN3, "");
+
+                Application.Exit();
                 return 0;
             }
 
@@ -101,7 +119,7 @@ namespace meter
             {
                 if (curDir != 0)
                 {
-                    stream.Write(Environment.NewLine + Environment.NewLine + "<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ") + Environment.NewLine);
+                    stream.Write(Environment.NewLine + Environment.NewLine + "<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + Environment.NewLine);
                 }
                 stream.Write(abc);
             }
@@ -120,7 +138,7 @@ namespace meter
             {
                 if (curDir != 1)
                 {
-                    stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ" + Environment.NewLine));
+                    stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ" + Environment.NewLine));
                 }
                 stream.Write(abc);
             }
@@ -132,6 +150,14 @@ namespace meter
             return 1;
         }
 
+        void runApp(string exePath, string args)
+        {
+            if (!File.Exists(exePath)) return;
+            ProcessStartInfo startInfo = new ProcessStartInfo(exePath, args);
+            startInfo.UseShellExecute = true;//This should not block your program
+            startInfo.WorkingDirectory = Path.GetDirectoryName(exePath);
+            Process.Start(startInfo);
+        }
 
         void cleanUp()
         {
