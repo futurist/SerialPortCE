@@ -64,9 +64,31 @@ namespace meter
 
         private void button1_Click(object sender, EventArgs e)
         {
+            openApp();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            rtbDisplay.Height = this.Height - 80;
+
+            comm.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
+            comm2.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
+
+            comm.onData = forward1;
+            comm2.onData = forward2;
+
+            if (!DEBUG)
+            {
+                openApp();
+            }
+        }
+
+        void openApp()
+        {
             if (PortOpened) return;
             comm.PortName = ini.ReadValueAsString("Port1", "PortName", "COM5");
-            comm.BaudRate = ini.ReadValueAsString("Port1", "BaudRate", "9600"); 
+            comm.BaudRate = ini.ReadValueAsString("Port1", "BaudRate", "9600");
             comm.Parity = ini.ReadValueAsString("Port1", "Parity", "None");
             comm.StopBits = ini.ReadValueAsString("Port1", "StopBits", "One");
             comm.DataBits = ini.ReadValueAsString("Port1", "DataBits", "8");
@@ -86,7 +108,7 @@ namespace meter
             comm2.DataBits = ini.ReadValueAsString("Port2", "DataBits", "8");
             // comm2.DisplayWindow = rtbDisplay;
             ex = comm2.OpenPort();
-            if (ex!=null)
+            if (ex != null)
             {
                 comm.ClosePort();
                 MessageBox.Show(comm2.PortName + " open fail:" + ex.Message);
@@ -95,26 +117,17 @@ namespace meter
 
             PortOpened = true;
             button1.Enabled = false;
-
-            if (! DEBUG)
+            
+            if (!DEBUG)
             {
+
+                this.Hide();
+
                 blackForm = new Form2(this);
-                blackForm.Show();
+                blackForm.ShowDialog();
+                
             }
 
-        }
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-            rtbDisplay.Height = this.Height - 80;
-
-            comm.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
-            comm2.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
-
-            comm.onData = forward1;
-            comm2.onData = forward2;
         }
 
 
@@ -210,6 +223,14 @@ namespace meter
         private void button2_Click(object sender, EventArgs e)
         {
             closeApp();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
         }
 
 
