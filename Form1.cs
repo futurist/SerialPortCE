@@ -107,6 +107,9 @@ namespace meter
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            rtbDisplay.Height = this.Height - 80;
+
             comm.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
             comm2.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
 
