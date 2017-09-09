@@ -36,7 +36,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(20, 205);
+            this.button1.Location = new System.Drawing.Point(20, 416);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(72, 25);
             this.button1.TabIndex = 1;
@@ -51,13 +51,13 @@
             this.rtbDisplay.Location = new System.Drawing.Point(3, 3);
             this.rtbDisplay.Multiline = true;
             this.rtbDisplay.Name = "rtbDisplay";
-            this.rtbDisplay.Size = new System.Drawing.Size(336, 196);
+            this.rtbDisplay.Size = new System.Drawing.Size(623, 407);
             this.rtbDisplay.TabIndex = 3;
             // 
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(98, 205);
+            this.button2.Location = new System.Drawing.Point(98, 416);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(72, 25);
             this.button2.TabIndex = 2;
@@ -69,7 +69,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(351, 244);
+            this.ClientSize = new System.Drawing.Size(638, 455);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.rtbDisplay);
