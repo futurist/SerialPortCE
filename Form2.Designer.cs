@@ -48,7 +48,7 @@
             this.ClientSize = new System.Drawing.Size(638, 455);
             this.Controls.Add(this.panel1);
             this.Name = "Form2";
-            this.Text = "Form2";
+            this.Text = "Meter";
             this.Load += new System.EventHandler(this.Form2_Load);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.Form2_Closing);
             this.ResumeLayout(false);

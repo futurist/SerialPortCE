@@ -75,7 +75,7 @@
             this.Controls.Add(this.rtbDisplay);
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Meter";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.Form1_Closing);
