@@ -291,7 +291,7 @@ namespace meter
         #endregion
 
         #region OpenPort
-        public bool OpenPort()
+        public Exception OpenPort()
         {
             try
             {
@@ -308,12 +308,12 @@ namespace meter
                 //display message
                 DisplayData(MessageType.Normal, String.Format(@"Port {0} opened at {1}" + Environment.NewLine, _portName, _baudRate));
                 //return true
-                return true;
+                return null;
             }
             catch (Exception ex)
             {
                 DisplayData(MessageType.Error, ex.Message + Environment.NewLine);
-                return false;
+                return ex;
             }
         }
 

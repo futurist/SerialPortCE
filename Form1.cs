@@ -18,17 +18,19 @@ namespace meter
         CommunicationManager comm = new CommunicationManager();
 
         CommunicationManager comm2 = new CommunicationManager();
+        string transType = string.Empty;
 
         INIFile ini;
 
         string baseFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-        string transType = string.Empty;
-        int curDir = -1;
-        int totalBytes = 0;
-        string logFileName;
-        StreamWriter stream;
-        Form2 blackForm=null;
-        bool DEBUG = false;
+        
+        public int curDir = -1;
+        public int totalBytes = 0;
+        public string logFileName;
+        public StreamWriter stream;
+        public Form2 blackForm = null;
+        public bool DEBUG = false;
+        public bool PortOpened = false;
         string CLOSE_KEY = null;
         string CLOSE_RUN1 = null;
         string CLOSE_RUN2 = null;
@@ -62,6 +64,7 @@ namespace meter
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (PortOpened) return;
             comm.PortName = ini.ReadValueAsString("Port1", "PortName", "COM5");
             comm.BaudRate = ini.ReadValueAsString("Port1", "BaudRate", "9600"); 
             comm.Parity = ini.ReadValueAsString("Port1", "Parity", "None");
@@ -69,7 +72,12 @@ namespace meter
             comm.DataBits = ini.ReadValueAsString("Port1", "DataBits", "8");
 
             if (DEBUG) comm.DisplayWindow = rtbDisplay;
-            comm.OpenPort();
+            Exception ex = comm.OpenPort();
+            if (ex != null)
+            {
+                MessageBox.Show(comm.PortName + " open fail:" + ex.Message);
+                return;
+            }
 
             comm2.PortName = ini.ReadValueAsString("Port2", "PortName", "COM2");
             comm2.BaudRate = ini.ReadValueAsString("Port2", "BaudRate", "9600");
@@ -77,11 +85,20 @@ namespace meter
             comm2.StopBits = ini.ReadValueAsString("Port2", "StopBits", "One");
             comm2.DataBits = ini.ReadValueAsString("Port2", "DataBits", "8");
             // comm2.DisplayWindow = rtbDisplay;
-            comm2.OpenPort();
+            ex = comm2.OpenPort();
+            if (ex!=null)
+            {
+                comm.ClosePort();
+                MessageBox.Show(comm2.PortName + " open fail:" + ex.Message);
+                return;
+            }
+
+            PortOpened = true;
+            button1.Enabled = false;
 
             if (! DEBUG)
             {
-                blackForm = new Form2();
+                blackForm = new Form2(this);
                 blackForm.Show();
             }
 
@@ -105,13 +122,7 @@ namespace meter
                 //Throw: control.Invoke must be used to interact with controls created on a separate thread
                 //blackForm.Close();
 
-                cleanUp();
-
-                runApp(CLOSE_RUN1, "");
-                runApp(CLOSE_RUN2, "");
-                runApp(CLOSE_RUN3, "");
-
-                Application.Exit();
+                closeApp();
                 return 0;
             }
 
@@ -159,7 +170,18 @@ namespace meter
             Process.Start(startInfo);
         }
 
-        void cleanUp()
+        public void closeApp()
+        {
+            cleanUp();
+
+            runApp(CLOSE_RUN1, "");
+            runApp(CLOSE_RUN2, "");
+            runApp(CLOSE_RUN3, "");
+
+            Application.Exit();
+        }
+
+        public void cleanUp()
         {
             if (stream != null)
             {
@@ -180,6 +202,11 @@ namespace meter
         private void Form1_Closing(object sender, CancelEventArgs e)
         {
             cleanUp();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            closeApp();
         }
 
 

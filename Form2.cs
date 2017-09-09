@@ -11,8 +11,10 @@ namespace meter
 {
     public partial class Form2 : Form
     {
-        public Form2()
+        Form1 parentForm;
+        public Form2(Form1 _parent)
         {
+            parentForm = _parent;
             InitializeComponent();
         }
 
@@ -37,7 +39,8 @@ namespace meter
         private void Form2_Closing(object sender, CancelEventArgs e)
         {
             Cursor.Show();
-            FullScreen.StopFullScreen(this); 
+            FullScreen.StopFullScreen(this);
+            parentForm.closeApp();
         }
     }
 }
