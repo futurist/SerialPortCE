@@ -69,7 +69,6 @@ namespace meter
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             rtbDisplay.Height = this.Height - 80;
 
             comm.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
@@ -146,14 +145,18 @@ namespace meter
             {
                 if (curDir != 0)
                 {
-                    stream.Write(Environment.NewLine + Environment.NewLine + "<<-- " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") + Environment.NewLine);
+                    stream.Write(Environment.NewLine + Environment.NewLine + "<<-- " + Environment.TickCount.ToString() + Environment.NewLine);
                 }
                 stream.Write(abc);
             }
 
             curDir = 0;
-            
-            comm2.WriteData(abc);
+
+            if (abc.Trim().Length >= 6)
+            {
+                comm2.WriteData(abc);
+            }
+
             totalBytes += abc.Length;
 
             return 1;
@@ -165,7 +168,7 @@ namespace meter
             {
                 if (curDir != 1)
                 {
-                    stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ" + Environment.NewLine));
+                    stream.Write(Environment.NewLine + Environment.NewLine + "-->> " + Environment.TickCount + Environment.NewLine);
                 }
                 stream.Write(abc);
             }
