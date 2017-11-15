@@ -193,7 +193,7 @@ namespace meter
                         //convert back to hex and display
                         DisplayData(MessageType.Outgoing, "--Write--" + Environment.NewLine + ByteToHex(newMsg) + Environment.NewLine);
                     }
-                    catch (FormatException ex)
+                    catch (Exception ex)
                     {
                         //display error message
                         DisplayData(MessageType.Error, ex.Message + Environment.NewLine);

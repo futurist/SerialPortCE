@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace meter
 {
@@ -22,7 +24,7 @@ namespace meter
 
         INIFile ini;
 
-        string baseFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+        public string baseFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         
         public int curDir = -1;
         public int totalBytes = 0;
@@ -30,11 +32,17 @@ namespace meter
         public StreamWriter stream;
         public Form2 blackForm = null;
         public bool DEBUG = false;
+        public bool FULLSCREEN = false;
         public bool PortOpened = false;
-        string CLOSE_KEY = null;
-        string CLOSE_RUN1 = null;
-        string CLOSE_RUN2 = null;
-        string CLOSE_RUN3 = null;
+        public string CLOSE_KEY = null;
+        public string CLOSE_RUN1 = null;
+        public string CLOSE_RUN2 = null;
+        public string CLOSE_RUN3 = null;
+        public string prevCode = "";
+
+
+        public double meterValue = 0;
+        public bool isYard = false;
 
         public Form1()
         {
@@ -51,7 +59,8 @@ namespace meter
             ini = new INIFile(iniFilePath);
 
             DEBUG = ini.ReadValueAsString("App", "Debug", "FALSE").Equals("TRUE", StringComparison.OrdinalIgnoreCase);
-            CLOSE_KEY = ini.ReadValueAsString("App", "CloseKey", "90 90");
+            FULLSCREEN = ini.ReadValueAsString("App", "FullScreen", "FALSE").Equals("TRUE", StringComparison.OrdinalIgnoreCase);
+            CLOSE_KEY = ini.ReadValueAsString("App", "CloseKey", "90 90 A0 A0");  // 90=Return, A0=Enter
             CLOSE_RUN1 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun1", ""));
             CLOSE_RUN2 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun2", ""));
             CLOSE_RUN3 = Path.Combine(baseFolder, ini.ReadValueAsString("App", "CloseRun3", ""));
@@ -69,6 +78,7 @@ namespace meter
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //rtbDisplay.Text = (String.Format("{0},  {1},  {2},  {3}", CLOSE_KEY, CLOSE_RUN1, CLOSE_RUN2, CLOSE_RUN3));
             rtbDisplay.Height = this.Height - 80;
 
             comm.CurrentTransmissionType = CommunicationManager.TransmissionType.Hex;
@@ -79,8 +89,10 @@ namespace meter
 
             if (!DEBUG)
             {
-                openApp();
+                
             }
+
+            openApp();
         }
 
         void openApp()
@@ -120,19 +132,55 @@ namespace meter
             if (!DEBUG)
             {
 
-                this.Hide();
-
-                blackForm = new Form2(this);
-                blackForm.ShowDialog();
+                showForm2();
                 
             }
 
         }
 
-
-        int forward1(String abc)
+        void showForm2()
         {
-            if (abc.Trim() == CLOSE_KEY)
+            //this.Hide();
+
+            blackForm = new Form2(this);
+            blackForm.Show();
+            forward1(" 3F FF FE ");
+            //forward1("A5 A5");
+        }
+
+        public void switchYard()
+        {
+            isYard = !isYard;
+            if (blackForm != null)
+            {
+                blackForm.updateText();
+            }
+        }
+
+        public void clearValue()
+        {
+            comm.WriteData("43");
+        }
+
+
+        public int forward1(String abc)
+        {
+            string value = Regex.Replace(abc, @"\s+", "");
+            
+            // Clear
+            if (value == "A5A5")
+            {
+                clearValue();
+            }
+
+            // Meter/Yard switch
+            if (value == "F7F7")
+            {
+                switchYard();
+            }
+
+            // Close App
+            if (prevCode + abc.Trim() == CLOSE_KEY) // 2 keys combo: 90 90 A0 A0
             {
                 //Throw: control.Invoke must be used to interact with controls created on a separate thread
                 //blackForm.Close();
@@ -140,6 +188,8 @@ namespace meter
                 closeApp();
                 return 0;
             }
+
+            prevCode = abc.Trim() + " ";
 
             if (DEBUG)
             {
@@ -155,6 +205,21 @@ namespace meter
             if (abc.Trim().Length >= 6)
             {
                 comm2.WriteData(abc);
+
+                try
+                {
+                    meterValue =((double)(
+                        Convert.ToInt32("0x400000", 16) - Convert.ToInt32("0x"+value , 16)
+                        ) * 0.1);
+                    if (blackForm != null)
+                    {
+                        blackForm.setMeter();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
             }
 
             totalBytes += abc.Length;
@@ -162,7 +227,7 @@ namespace meter
             return 1;
         }
 
-        int forward2(String abc)
+        public int forward2(String abc)
         {
             if (DEBUG)
             {
@@ -234,6 +299,11 @@ namespace meter
             {
                 this.Close();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            showForm2();
         }
 
 
