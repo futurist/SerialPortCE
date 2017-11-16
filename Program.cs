@@ -13,7 +13,8 @@ namespace meter
         [MTAThread]
         static void Main()
         {
-            Application.Run(new Form1());
+            Form1 f = new Form1();
+            Application.Run(f);
         }
     }
 }

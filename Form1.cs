@@ -40,7 +40,7 @@ namespace meter
         public string CLOSE_RUN3 = null;
         public string prevCode = "";
 
-
+        public bool firstPaint = false;
         public double meterValue = 0;
         public bool isYard = false;
 
@@ -69,6 +69,8 @@ namespace meter
             {
                 stream = new StreamWriter(logFileName, true);
             }
+
+           
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -129,23 +131,21 @@ namespace meter
             PortOpened = true;
             button1.Enabled = false;
             
-            if (!DEBUG)
-            {
-
-                showForm2();
-                
-            }
-
+            
         }
 
         void showForm2()
         {
-            //this.Hide();
+            this.Hide();
 
             blackForm = new Form2(this);
             blackForm.Show();
-            forward1(" 3F FF FE ");
+            blackForm.BringToFront();
+            this.SendToBack();
+            //blackForm.debug("sdjf");
+            //forward1(" 3F FF FE ");
             //forward1("A5 A5");
+
         }
 
         public void switchYard()
@@ -166,7 +166,8 @@ namespace meter
         public int forward1(String abc)
         {
             string value = Regex.Replace(abc, @"\s+", "");
-            
+
+            if (blackForm != null && DEBUG) blackForm.debug(value); 
             // Clear
             if (value == "A5A5")
             {
@@ -211,6 +212,7 @@ namespace meter
                     meterValue =((double)(
                         Convert.ToInt32("0x400000", 16) - Convert.ToInt32("0x"+value , 16)
                         ) * 0.1);
+
                     if (blackForm != null)
                     {
                         blackForm.setMeter();
@@ -281,6 +283,8 @@ namespace meter
 
             comm.ClosePort();
             comm2.ClosePort();
+
+            if (blackForm != null) blackForm.CloseForm();
         }
 
         private void Form1_Closing(object sender, CancelEventArgs e)
@@ -304,6 +308,18 @@ namespace meter
         private void button3_Click(object sender, EventArgs e)
         {
             showForm2();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (firstPaint) return;
+            firstPaint = true;
+            if (!DEBUG)
+            {
+
+                showForm2();
+
+            }
         }
 
 

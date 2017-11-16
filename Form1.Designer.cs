@@ -86,10 +86,12 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.rtbDisplay);
             this.KeyPreview = true;
+            this.Location = new System.Drawing.Point(0, 0);
             this.Name = "Form1";
             this.Text = "Meter";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.Form1_Closing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);

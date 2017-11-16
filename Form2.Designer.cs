@@ -33,6 +33,7 @@
             this.buttonReset = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.buttonText = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // panel1
@@ -45,12 +46,11 @@
             // 
             // textBoxMeter
             // 
-            this.textBoxMeter.BackColor = System.Drawing.SystemColors.ControlLight;
             this.textBoxMeter.Font = new System.Drawing.Font("Tahoma", 36F, System.Drawing.FontStyle.Regular);
             this.textBoxMeter.Location = new System.Drawing.Point(133, 64);
             this.textBoxMeter.Name = "textBoxMeter";
             this.textBoxMeter.ReadOnly = true;
-            this.textBoxMeter.Size = new System.Drawing.Size(247, 64);
+            this.textBoxMeter.Size = new System.Drawing.Size(339, 64);
             this.textBoxMeter.TabIndex = 1;
             // 
             // buttonReset
@@ -72,12 +72,22 @@
             // 
             // buttonText
             // 
-            this.buttonText.Location = new System.Drawing.Point(270, 147);
+            this.buttonText.Location = new System.Drawing.Point(362, 147);
             this.buttonText.Name = "buttonText";
             this.buttonText.Size = new System.Drawing.Size(110, 42);
             this.buttonText.TabIndex = 4;
             this.buttonText.Text = "码制";
             this.buttonText.Click += new System.EventHandler(this.buttonText_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.Color.DarkGreen;
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Location = new System.Drawing.Point(133, 208);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(314, 77);
+            this.textBox1.TabIndex = 7;
             // 
             // Form2
             // 
@@ -86,6 +96,7 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.DarkGreen;
             this.ClientSize = new System.Drawing.Size(638, 455);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.buttonText);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.buttonReset);
@@ -107,5 +118,6 @@
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button buttonText;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
